@@ -17,7 +17,12 @@ public struct ISOInfo {
     public let otherOversizedFiles: [String]
 
     public var needsSplit: Bool { installImageSize > fat32MaxFileSize }
-    public var isWindows11: Bool { editions.contains { $0.localizedCaseInsensitiveContains("Windows 11") } }
+    public var isWindows11: Bool {
+        if !editions.isEmpty { return editions.contains { $0.localizedCaseInsensitiveContains("Windows 11") } }
+        // No wimlib to read the editions: fall back to the file name (e.g. Win11_25H2_English_x64.iso).
+        let n = url.lastPathComponent.lowercased()
+        return n.contains("win11") || n.contains("windows 11") || n.contains("windows11")
+    }
     public var productName: String {
         if isWindows11 { return "Windows 11" }
         if editions.contains(where: { $0.localizedCaseInsensitiveContains("Windows 10") }) { return "Windows 10" }

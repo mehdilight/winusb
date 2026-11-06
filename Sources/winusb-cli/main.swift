@@ -58,6 +58,27 @@ case "list":
         }
     } catch { fail(error.localizedDescription) }
 
+case "unattend":
+    // Hidden helper: print the answer file for an ISO, e.g. winusb-cli unattend x.iso --no-telemetry
+    guard args.count >= 2 else { usage() }
+    var u = UnattendOptions()
+    var j = 2
+    while j < args.count {
+        switch args[j] {
+        case "--bypass-checks": u.bypassHardwareChecks = true
+        case "--bypass-online": u.bypassOnlineAccount = true
+        case "--local-user": j += 1; u.localAccountName = j < args.count ? args[j] : ""
+        case "--no-telemetry": u.disableDataCollection = true
+        default: fail("unknown option \(args[j])")
+        }
+        j += 1
+    }
+    do {
+        let iso = try ISOImage.open(URL(fileURLWithPath: args[1]))
+        defer { ISOImage.close(devEntry: iso.devEntry) }
+        print(Unattend.xml(u, archs: iso.architectures, isWindows11: iso.isWindows11) ?? "", terminator: "")
+    } catch { fail(error.localizedDescription) }
+
 case "info":
     guard args.count >= 2 else { usage() }
     do {

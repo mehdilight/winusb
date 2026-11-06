@@ -65,9 +65,15 @@ struct ContentView: View {
 
     private var customSection: some View {
             section("Windows Setup Customisation") {
-                Toggle("Remove requirement for TPM 2.0, Secure Boot, 4 GB+ RAM and supported CPU",
-                       isOn: $model.unattend.bypassHardwareChecks)
-                Toggle("Remove requirement for an online Microsoft account", isOn: $model.unattend.bypassOnlineAccount)
+                Group {
+                    Toggle("Remove requirement for TPM 2.0, Secure Boot and 4 GB+ RAM",
+                           isOn: $model.unattend.bypassHardwareChecks)
+                    Toggle("Remove requirement for an online Microsoft account", isOn: $model.unattend.bypassOnlineAccount)
+                }
+                .disabled(!isWin11)
+                if !isWin11 {
+                    Text("The first two options only apply to Windows 11 images.").font(.caption).foregroundStyle(.secondary)
+                }
                 HStack {
                     Toggle("Create a local account named", isOn: Binding(
                         get: { !model.unattend.localAccountName.isEmpty },
@@ -109,6 +115,8 @@ struct ContentView: View {
             }
             .controlSize(.large)
     }
+
+    private var isWin11: Bool { model.iso?.isWindows11 ?? true }
 
     // MARK: - Pieces
 

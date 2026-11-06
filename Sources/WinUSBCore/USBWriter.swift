@@ -151,7 +151,10 @@ public final class USBWriter {
         }
 
         // ---- 4. autounattend.xml ----------------------------------------------
-        if let xml = Unattend.xml(options.unattend) {
+        if !iso.isWindows11 && (options.unattend.bypassHardwareChecks || options.unattend.bypassOnlineAccount) {
+            log("Skipping Windows 11-only options (TPM/Secure Boot bypass, BypassNRO): this is not a Windows 11 image")
+        }
+        if let xml = Unattend.xml(options.unattend, archs: iso.architectures, isWindows11: iso.isWindows11) {
             log("Writing autounattend.xml (Windows Setup customisations)")
             try xml.write(to: dest.appendingPathComponent("autounattend.xml"), atomically: false, encoding: .utf8)
         }
