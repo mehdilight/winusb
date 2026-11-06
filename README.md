@@ -34,3 +34,6 @@ build/WinUSB.app/Contents/MacOS/winusb-cli write Win11.iso disk4 --bypass-checks
 - [ ] Verify written files against the ISO (checksum pass)
 - [ ] Download Windows ISOs from inside the app
 - [ ] Signed and notarized releases (DMG)
+
+## License
+MIT, see [LICENSE](LICENSE). Built app bundles include [wimlib](https://wimlib.net), which is licensed separately (LGPLv3/GPLv3); its license files are shipped next to it in `WinUSB.app/Contents/Resources/wimlib/`.
